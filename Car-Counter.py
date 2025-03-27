@@ -5,9 +5,10 @@ import cvzone
 import math
 from sort import *
 
-cap = cv2.VideoCapture("../Videos/cars.mp4")  # For Video
-
-model = YOLO("../Yolo-Weights/yolov8l.pt")
+cap = cv2.VideoCapture("Videos/cars.mp4")  # For Video
+print(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+model = YOLO("../Yolo-Weights/yolo11n.pt")
 
 classNames = [
     "person",
@@ -93,7 +94,7 @@ classNames = [
 ]
 
 mask = cv2.imread("mask.png")
-
+# print(mask.shape)
 # Tracking
 tracker = Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 
@@ -102,7 +103,11 @@ totalCount = []
 
 while True:
     success, img = cap.read()
-    imgRegion = cv2.bitwise_and(img, mask)
+    print("Frame shape:", img.shape)
+    print("Mask shape:", mask.shape)
+
+    mask_resized = cv2.resize(mask, (img.shape[1], img.shape[0]))
+    imgRegion = cv2.bitwise_and(img, mask_resized)
 
     imgGraphics = cv2.imread("graphics.png", cv2.IMREAD_UNCHANGED)
     img = cvzone.overlayPNG(img, imgGraphics, (0, 0))
